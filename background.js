@@ -149,3 +149,18 @@ function formatBytes(bytes) {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + ['B', 'KB', 'MB', 'GB'][i];
 }
+async function generateHashFromFile(path) {
+  try {
+    const fileUrl = "file:///" + path.replace(/\\/g, "/");
+    const response = await fetch(fileUrl);
+    const buffer = await response.arrayBuffer();
+
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch (e) {
+    console.log("[DDAS] Hash error:", e);
+    return null;
+  }
+}
