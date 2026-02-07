@@ -4,10 +4,14 @@
   "version": "1.0",
   "description": "Detects duplicate downloads using intelligent file comparison.",
   "permissions": [
-    "downloads",
-    "notifications",
-    "storage"
-  ],
+  "downloads",
+  "notifications",
+  "storage",
+  "downloads.open"
+],
+"host_permissions": [
+  "file:///*"
+],
   "background": {
     "service_worker": "background.js"
   },
