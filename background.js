@@ -1,3 +1,11 @@
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.set({
+    enabled: true,
+    duplicates: [],
+    storageSaved: 0,
+    hashes: {}   // NEW
+  });
+});
 // Listener: Triggered when a download is about to start
 chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
 
@@ -141,3 +149,65 @@ function formatBytes(bytes) {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + ['B', 'KB', 'MB', 'GB'][i];
 }
+async function generateHashFromFile(path) {
+  try {
+    const fileUrl = "file:///" + path.replace(/\\/g, "/");
+    const response = await fetch(fileUrl);
+    const buffer = await response.arrayBuffer();
+
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch (e) {
+    console.log("[DDAS] Hash error:", e);
+    return null;
+  }
+}
+chrome.downloads.onChanged.addListener((delta) => {
+  if (delta.state && delta.state.current === "complete") {
+    
+    chrome.downloads.search({ id: delta.id }, async (items) => {
+      if (!items || !items.length) return;
+      
+      const file = items[0];
+      if (!file.filename) return;
+
+      const hash = await generateHashFromFile(file.filename);
+      if (!hash) return;
+
+      chrome.storage.local.get({ hashes: {} }, (data) => {
+        const hashes = data.hashes;
+
+        // Check for identical content
+        const existingId = Object.keys(hashes).find(
+          key => hashes[key] === hash && parseInt(key) !== file.id
+        );
+
+        if (existingId) {
+          console.log("[DDAS] HASH DUPLICATE DETECTED");
+
+          chrome.notifications.create({
+            type: "basic",
+            iconUrl: "icon.png",
+            title: "Content Duplicate Detected",
+            message: "This file has identical content to a previously downloaded file.",
+            priority: 2
+          });
+
+          saveLog({
+            id: file.id,
+            name: getBasename(file.filename),
+            sizeStr: formatBytes(file.fileSize || 0),
+            rawSize: file.fileSize || 0,
+            status: "⚠️ Content duplicate (hash match)",
+            type: "duplicate"
+          });
+        }
+
+        hashes[file.id] = hash;
+        chrome.storage.local.set({ hashes });
+      });
+    });
+  }
+});
