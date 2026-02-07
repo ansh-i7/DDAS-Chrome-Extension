@@ -1,3 +1,11 @@
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.set({
+    enabled: true,
+    duplicates: [],
+    storageSaved: 0,
+    hashes: {}   // NEW
+  });
+});
 // Listener: Triggered when a download is about to start
 chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
 
