@@ -2,115 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DDAS</title>
-
+  <title>DDAS Dashboard</title>
   <style>
-    body {
-      width: 230px;
-      margin: 0;
-      padding: 10px;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #fff;
-      color: #222;
-    }
+    body { width: 320px; font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f6f8; }
+    
+    /* Header */
+    .header { background: #2c3e50; color: white; padding: 15px; text-align: center; }
+    .header h2 { margin: 0; font-size: 16px; }
+    
+    /* Stats Bar */
+    .stats { display: flex; justify-content: space-around; background: white; padding: 10px; border-bottom: 1px solid #ddd; }
+    .stat-box { text-align: center; }
+    .stat-num { display: block; font-weight: bold; font-size: 18px; color: #2980b9; }
+    .stat-label { font-size: 10px; color: #7f8c8d; text-transform: uppercase; }
 
-    .header {
-  font-size: 12px;
-  font-weight: 500;
-  margin-bottom: 6px;
-  text-align: center;
-}
+    /* List Container */
+    #list { max-height: 350px; overflow-y: auto; padding: 10px; }
+    .empty { text-align: center; color: #aaa; padding: 20px; font-size: 13px; }
 
+    /* Card Item */
+    .card { background: white; border-radius: 6px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border-left: 4px solid transparent; }
+    .card.warn { border-left-color: #e67e22; } /* Orange for Paused */
+    .card.safe { border-left-color: #27ae60; } /* Green for Safe */
+    .card.cancelled { border-left-color: #c0392b; opacity: 0.7; } /* Red for Cancelled */
 
-    .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
+    .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .fname { font-weight: bold; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    .fsize { background: #eee; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #555; }
+    .status-msg { font-size: 11px; color: #666; display: block; margin-bottom: 8px; }
 
-    .metric {
-      font-size: 12px;
-      color: #333;
-      margin: 6px 0;
-    }
+    /* Action Buttons */
+    .actions { display: flex; gap: 5px; }
+    .btn { flex: 1; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+    
+    /* CANCEL BUTTON STYLE */
+    .btn-cancel { background: #fadbd8; color: #c0392b; }
+    .btn-cancel:hover { background: #f5b7b1; }
+    
+    /* KEEP BUTTON STYLE */
+    .btn-keep { background: #d6eaf8; color: #2980b9; }
+    .btn-keep:hover { background: #aed6f1; }
 
-    .metric span {
-      font-weight: 600;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 8px;
-      padding: 6px 0;
-      font-size: 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: #f8f8f8;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #efefef;
-    }
-
-    input[type="checkbox"] {
-      cursor: pointer;
-    }
-    .header-box {
-  padding: 8px 6px;
-  margin-bottom: 6px;
-  border-radius: 6px;
-  background: linear-gradient(
-    180deg,
-    #e1e0e0 24%,
-    #e5e2e2 76%
-  );
-  border: 1px solid #e6e6e6;
-  text-align: center;
-}
-
-.title h1 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.header {
-  margin-top: 2px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: #555;
-}
-
+    /* Footer */
+    .footer { text-align: center; padding: 10px; color: #999; font-size: 11px; cursor: pointer; }
+    .footer:hover { text-decoration: underline; }
   </style>
 </head>
-
 <body>
-  <div class="header-box">
-  <div class="title">
-    <h1>DDAS</h1>
-  </div>
-  <div class="header">Data Download Duplicate Alert System</div>
-</div>
 
-<!-- <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 6px 0 8px;"> -->
-
-
-
-  <div class="row">
-    <span>Duplicate detection</span>
-    <input type="checkbox" id="toggle">
+  <div class="header">
+    <h2>🛡️ DDAS Watchdog</h2>
   </div>
 
-  <div class="metric">
-    Storage saved: <span id="storageSaved">0 MB</span>
+  <div class="stats">
+    <div class="stat-box">
+      <span class="stat-num" id="dup-count">0</span>
+      <span class="stat-label">Duplicates</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-num" id="saved-mem">0 MB</span>
+      <span class="stat-label">Memory Saved</span>
+    </div>
   </div>
 
-  <button id="viewDuplicates">
-    View duplicate files
-  </button>
+  <div id="list">
+    </div>
 
+  <div class="footer" id="clear">Clear History</div>
+
+  <script src="popup.js"></script>
 </body>
 </html>
