@@ -164,3 +164,50 @@ async function generateHashFromFile(path) {
     return null;
   }
 }
+chrome.downloads.onChanged.addListener((delta) => {
+  if (delta.state && delta.state.current === "complete") {
+    
+    chrome.downloads.search({ id: delta.id }, async (items) => {
+      if (!items || !items.length) return;
+      
+      const file = items[0];
+      if (!file.filename) return;
+
+      const hash = await generateHashFromFile(file.filename);
+      if (!hash) return;
+
+      chrome.storage.local.get({ hashes: {} }, (data) => {
+        const hashes = data.hashes;
+
+        // Check for identical content
+        const existingId = Object.keys(hashes).find(
+          key => hashes[key] === hash && parseInt(key) !== file.id
+        );
+
+        if (existingId) {
+          console.log("[DDAS] HASH DUPLICATE DETECTED");
+
+          chrome.notifications.create({
+            type: "basic",
+            iconUrl: "icon.png",
+            title: "Content Duplicate Detected",
+            message: "This file has identical content to a previously downloaded file.",
+            priority: 2
+          });
+
+          saveLog({
+            id: file.id,
+            name: getBasename(file.filename),
+            sizeStr: formatBytes(file.fileSize || 0),
+            rawSize: file.fileSize || 0,
+            status: "⚠️ Content duplicate (hash match)",
+            type: "duplicate"
+          });
+        }
+
+        hashes[file.id] = hash;
+        chrome.storage.local.set({ hashes });
+      });
+    });
+  }
+});
