@@ -31,13 +31,13 @@ DDAS acts as a proactive watchdog for your downloads by:
 
 ## ✨ Key Features
 
-### 🔔 Real-Time Duplicate Detection
+### 🔔 Real-Time Duplicate Detection  
 Uses three-layer intelligence:
 1. **File size matching**
 2. **Cleaned filename comparison**
 3. **SHA-256 content hashing (content-level match)**
 
-### 📊 Smart Dashboard (Popup UI)
+### 📊 Smart Dashboard (Popup UI)  
 Shows:
 - Total **Duplicates Detected**
 - **Memory Saved**
@@ -50,13 +50,13 @@ Users can:
 - Cancel a duplicate download  
 - Resume (“Keep”) if they still want it  
 
-### 🤖 Fully Automated
+### 🤖 Fully Automated  
 - Works silently in the background  
 - No manual configuration required  
 
 ---
 
-## 🧠 Technical Approach
+## 🧠 Technical Approach  
 
 ### Background Service Worker (`background.js`)
 - Listens to:
@@ -90,15 +90,61 @@ Users can:
 
 ---
 
-## 🔐 Permissions (Why we need them)
+## 🔐 Why These Permissions Are Needed  
 
-```json
-"permissions": [
-  "downloads",
-  "notifications",
-  "storage",
-  "downloads.open"
-],
-"host_permissions": [
-  "file:///*"
-]
+This extension uses its permissions for the following purposes:
+
+- Monitoring downloads  
+- Reading files for hashing  
+- Showing alerts  
+- Saving history locally  
+
+---
+
+## 🚀 Installation (For Judges / Demo)
+
+1. Open **Chrome**  
+2. Visit: `chrome://extensions/`  
+3. Enable **Developer mode** (top-right)  
+4. Click **Load unpacked**  
+5. Select this project folder  
+6. Pin **DDAS** to the toolbar  
+
+---
+
+## 📂 Project Structure  
+
+DDAS/
+│── manifest.json
+│── background.js
+│── popup.html
+│── popup.js
+│── icon.png
+
+
+---
+
+## 🏆 Hackathon Impact  
+
+| Metric | Value |
+|--------|-------|
+| User Pain Reduced | High |
+| Automation Level | Fully Automatic |
+| Storage Saved | Dynamic (tracked live) |
+| Usability | One-click decisions |
+| Innovation | Content-level hashing in browser |
+
+---
+
+## 🔮 Future Scope  
+
+- AI-based similarity detection  
+- Folder whitelisting  
+- Cloud sync of history  
+- Dark mode  
+- Export logs as CSV  
+- Cross-browser support (Firefox, Edge)
+
+---
+
+---
