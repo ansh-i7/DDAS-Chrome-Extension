@@ -12,24 +12,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.logs.length === 0) {
         list.innerHTML = '<div class="empty">No recent activity</div>';
+        dupCountLabel.innerText = "0";
+        savedMemLabel.innerText = "0 B";
         return;
       }
 
       data.logs.forEach(log => {
-        // Calculate Stats
-        if (log.status.includes('Paused') || log.status.includes('Cancelled')) {
+        // --- 🛡️ BULLETPROOF STATS LOGIC ---
+        // Count as duplicate if type is "duplicate" OR if the status text contains "Duplicate"
+        if (log.type === "duplicate" || (log.status && log.status.includes("Duplicate"))) {
           duplicates++;
-          if (log.status.includes('Cancelled')) {
-            savedBytes += parseSize(log.size); // Add to memory saved
-          }
+        }
+
+        if (log.type === "cancelled") {
+          // Use rawSize if available (accurate), otherwise parse the string (fallback)
+          const bytes = (log.rawSize !== undefined) ? log.rawSize : parseSize(log.size);
+          savedBytes += bytes;
         }
 
         const div = document.createElement('div');
         let cssClass = 'safe';
         let actionsHtml = '';
 
-        // IF PAUSED: Show Cancel/Keep Buttons
-        if (log.status.includes('Paused')) {
+        // Determine CSS Class & Buttons based on status
+        if (log.status.includes('Duplicate') || log.status.includes('Paused')) {
           cssClass = 'warn';
           actionsHtml = `
             <div class="actions">
@@ -57,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
       dupCountLabel.innerText = duplicates;
       savedMemLabel.innerText = formatBytes(savedBytes);
 
-      // Attach Click Listeners to the new buttons
       attachListeners();
     });
   }
@@ -68,10 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(e.target.dataset.id);
         
-        // 1. Cancel the download in Chrome
         chrome.downloads.cancel(id, () => {
-          // 2. Update the log status to "Cancelled" so it turns red
-          updateLogStatus(id, "🚫 Cancelled");
+          // Mark as cancelled and refresh UI
+          updateLogStatus(id, "🚫 Cancelled", "cancelled");
         });
       });
     });
@@ -81,16 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(e.target.dataset.id);
         chrome.downloads.resume(id, () => {
-          updateLogStatus(id, "✅ Resumed");
+          updateLogStatus(id, "✅ Resumed", "safe");
         });
       });
     });
   }
 
-  function updateLogStatus(id, newStatus) {
+  function updateLogStatus(id, newStatus, newType) {
     chrome.storage.local.get({ logs: [] }, (data) => {
       const updatedLogs = data.logs.map(log => {
-        if (log.id === id) log.status = newStatus;
+        if (log.id === id) {
+          log.status = newStatus;
+          log.type = newType;
+        }
         return log;
       });
       chrome.storage.local.set({ logs: updatedLogs }, render);
@@ -102,13 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.set({ logs: [] }, render);
   });
 
-  // Helper: "1.2 MB" -> 1258291 bytes
+  // Helper: "1.2 MB" -> 1258291 bytes (Fallback)
   function parseSize(sizeStr) {
     if (!sizeStr) return 0;
     const parts = sizeStr.split(' ');
     const num = parseFloat(parts[0]);
     if (parts[1] === 'KB') return num * 1024;
     if (parts[1] === 'MB') return num * 1024 * 1024;
+    if (parts[1] === 'GB') return num * 1024 * 1024 * 1024;
     return num;
   }
 
