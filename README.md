@@ -6,7 +6,7 @@ DDAS (Duplicate Download Alert System) is an intelligent Chrome extension that p
 
 ---
 
-## 🚨 Problem Statement
+##  Problem Statement
 
 Most users unknowingly download the same file multiple times because:
 
@@ -14,11 +14,11 @@ Most users unknowingly download the same file multiple times because:
 - Browsers don’t warn about duplicates  
 - Downloads folder becomes messy and bloated  
 
-👉 **Result:** wasted storage, confusion, and time loss.
+ **Result:** wasted storage, confusion, and time loss.
 
 ---
 
-## 💡 Our Solution — DDAS
+##  Our Solution — DDAS
 
 DDAS acts as a proactive watchdog for your downloads by:
 
@@ -29,15 +29,15 @@ DDAS acts as a proactive watchdog for your downloads by:
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
-### 🔔 Real-Time Duplicate Detection  
+###  Real-Time Duplicate Detection  
 Uses three-layer intelligence:
 1. **File size matching**
 2. **Cleaned filename comparison**
 3. **SHA-256 content hashing (content-level match)**
 
-### 📊 Smart Dashboard (Popup UI)  
+###  Smart Dashboard (Popup UI)  
 Shows:
 - Total **Duplicates Detected**
 - **Memory Saved**
@@ -50,13 +50,13 @@ Users can:
 - Cancel a duplicate download  
 - Resume (“Keep”) if they still want it  
 
-### 🤖 Fully Automated  
+###  Fully Automated  
 - Works silently in the background  
 - No manual configuration required  
 
 ---
 
-## 🧠 Technical Approach  
+##  Technical Approach  
 
 ### Background Service Worker (`background.js`)
 - Listens to:
@@ -78,7 +78,7 @@ Users can:
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Platform:** Chrome Extension (Manifest V3)  
 - **Languages:** JavaScript, HTML, CSS  
@@ -90,7 +90,7 @@ Users can:
 
 ---
 
-## 🔐 Why These Permissions Are Needed  
+##  Why These Permissions Are Needed  
 
 This extension uses its permissions for the following purposes:
 
@@ -101,7 +101,7 @@ This extension uses its permissions for the following purposes:
 
 ---
 
-## 🚀 Installation (For Judges / Demo)
+##  Installation (For Judges / Demo)
 
 1. Open **Chrome**  
 2. Visit: `chrome://extensions/`  
@@ -112,7 +112,7 @@ This extension uses its permissions for the following purposes:
 
 ---
 
-## 📂 Project Structure  
+##  Project Structure  
 
 DDAS/
 │── manifest.json
@@ -124,7 +124,7 @@ DDAS/
 
 ---
 
-## 🏆 Hackathon Impact  
+##  Hackathon Impact  
 
 | Metric | Value |
 |--------|-------|
@@ -136,7 +136,7 @@ DDAS/
 
 ---
 
-## 🔮 Future Scope  
+##  Future Scope  
 
 - AI-based similarity detection  
 - Folder whitelisting  
